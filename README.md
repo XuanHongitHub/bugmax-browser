@@ -23,3 +23,7 @@ Manual trigger inputs:
 - `bugmax-windows-x64-runtime`
 - `bugmax-macos-arm64-runtime`
 - `bugmax-macos-x64-runtime`
+
+## Release Process
+
+- One-shot release checklist: `docs/release-one-shot-checklist.md`
