@@ -22,16 +22,16 @@ export PATH="${DEPOT_DIR}:$PATH"
 
 cd "${WORK_DIR}"
 if [ ! -d "${SRC_DIR}" ]; then
-  fetch --nohooks chromium
+  fetch --nohooks --no-history chromium
 fi
 
 cd "${SRC_DIR}"
 if [ -n "${CHROMIUM_REF}" ]; then
-  git fetch --tags --depth 1 origin "${CHROMIUM_REF}" || true
-  git checkout "${CHROMIUM_REF}" || true
+  git fetch --tags --depth 1 origin "${CHROMIUM_REF}"
+  git checkout "${CHROMIUM_REF}"
 fi
 
-gclient sync -D --force --with_branch_heads --with_tags
+gclient sync -D --force --with_branch_heads --with_tags --no-history
 
 gclient runhooks
 

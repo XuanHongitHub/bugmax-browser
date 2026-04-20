@@ -8,14 +8,15 @@ $ErrorActionPreference = "Stop"
 $validator = Join-Path $RepoRoot "scripts/validate-customization-patchset.ps1"
 & $validator -RepoRoot $RepoRoot
 
-$patchDir = Join-Path $RepoRoot "patches/chromium"
-if (Test-Path $patchDir) {
-  $patches = Get-ChildItem -Path $patchDir -Filter *.patch | Sort-Object Name
-  foreach ($patch in $patches) {
-    Write-Host "Applying patch $($patch.Name)"
-    git -C $ChromiumSrc apply --3way --whitespace=nowarn $patch.FullName
-  }
+$python = (Get-Command python -ErrorAction SilentlyContinue)
+if (-not $python) {
+  $python = (Get-Command python3 -ErrorAction SilentlyContinue)
 }
+if (-not $python) {
+  throw "Python is required to apply Bugmax customizations."
+}
+
+& $python.Source (Join-Path $RepoRoot "scripts/apply-customizations.py") $ChromiumSrc
 
 # Branding defaults that do not require source tree edits.
 Write-Host "Bugmax customization layer applied (Windows)."

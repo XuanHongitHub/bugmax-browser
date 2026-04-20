@@ -19,19 +19,21 @@ if (!(Test-Path $depotDir)) {
   git clone --depth 1 https://chromium.googlesource.com/chromium/tools/depot_tools.git $depotDir
 }
 $env:Path = "$depotDir;$env:Path"
+$env:DEPOT_TOOLS_WIN_TOOLCHAIN = "0"
+$env:GYP_MSVS_VERSION = "2022"
 
 Set-Location $workDir
 if (!(Test-Path $srcDir)) {
-  fetch --nohooks chromium
+  fetch --nohooks --no-history chromium
 }
 
 Set-Location $srcDir
 if ($ChromiumRef -ne "") {
-  try { git fetch --tags --depth 1 origin $ChromiumRef } catch {}
-  try { git checkout $ChromiumRef } catch {}
+  git fetch --tags --depth 1 origin $ChromiumRef
+  git checkout $ChromiumRef
 }
 
-gclient sync -D --force --with_branch_heads --with_tags
+gclient sync -D --force --with_branch_heads --with_tags --no-history
 gclient runhooks
 
 if ($ApplyCustomizations -eq "true") {
