@@ -1,16 +1,22 @@
-diff --git a/chrome/browser/bugmax/search_defaults.md b/chrome/browser/bugmax/search_defaults.md
-new file mode 100644
-index 0000000000000..a922bb91b8e2a
---- /dev/null
-+++ b/chrome/browser/bugmax/search_defaults.md
-@@ -0,0 +1,10 @@
-+# Bugmax Search Defaults Marker
+diff --git a/components/omnibox/browser/autocomplete_input.cc b/components/omnibox/browser/autocomplete_input.cc
+--- a/components/omnibox/browser/autocomplete_input.cc
++++ b/components/omnibox/browser/autocomplete_input.cc
+@@ -253,6 +253,18 @@ metrics::OmniboxInputType AutocompleteInput::Parse(
+   if (first_non_white == std::u16string::npos)
+     return metrics::OmniboxInputType::EMPTY;  // All whitespace.
+ 
++  // Bugmax rule: for plain whitespace queries that do not look like explicit
++  // URLs, bias toward search classification to avoid accidental navigation to
++  // malformed hostnames (for example: "seller temu" -> "http://seller%20temu").
++  const bool has_space =
++      text.find_first_of(base::kWhitespaceUTF16) != std::u16string::npos;
++  const bool has_explicit_scheme = text.find(u"://") != std::u16string::npos;
++  const bool has_path_or_known_url_delimiter =
++      text.find(u"/") != std::u16string::npos ||
++      text.find(u".") != std::u16string::npos;
++  if (has_space && !has_explicit_scheme && !has_path_or_known_url_delimiter)
++    return metrics::OmniboxInputType::QUERY;
 +
-+Search defaults are distributed with runtime artifacts via:
-+- config/initial_preferences.json
-+
-+Expected behavior:
-+- query text -> search provider URL
-+- valid URL -> direct navigation
-+- avoid accidental coercion to malformed `http://<query>`
-+
+   // Ask our parsing back-end to help us understand what the user typed.  We
+   // use the URLFixerUpper here because we want to be smart about what we
+   // consider a scheme.  For example, we shouldn't consider www.google.com:80

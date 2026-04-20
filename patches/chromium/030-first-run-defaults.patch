@@ -1,15 +1,21 @@
-diff --git a/chrome/browser/bugmax/first_run_defaults.md b/chrome/browser/bugmax/first_run_defaults.md
-new file mode 100644
-index 0000000000000..4b396fc3db67c
---- /dev/null
-+++ b/chrome/browser/bugmax/first_run_defaults.md
-@@ -0,0 +1,9 @@
-+# Bugmax First-Run Defaults Marker
+diff --git a/components/omnibox/browser/omnibox_prefs.cc b/components/omnibox/browser/omnibox_prefs.cc
+--- a/components/omnibox/browser/omnibox_prefs.cc
++++ b/components/omnibox/browser/omnibox_prefs.cc
+@@ -19,6 +19,9 @@
+ 
+ namespace omnibox {
+ 
++// Bugmax-specific marker pref to help identify first-run default seeding.
++constexpr char kBugmaxFirstRunDefaultsApplied[] = "bugmax.first_run_defaults";
 +
-+Runtime defaults are packaged into artifacts as `initial_preferences`.
-+
-+Intent:
-+- clean first-run setup for BugLogin managed profiles
-+- no dependency on legacy runtime hacks
-+- predictable default search provider initialization
-+
+ void RegisterProfilePrefs(PrefRegistrySimple* registry) {
+   registry->RegisterBooleanPref(
+       kKeywordSpaceTriggeringEnabled, true,
+@@ -47,6 +50,7 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry) {
+   registry->RegisterIntegerPref(kAimHintLastImpressionDay, 0);
+   registry->RegisterIntegerPref(kAimHintDailyImpressionsCount, 0);
+   registry->RegisterIntegerPref(kAimHintTotalImpressions, 0);
++  registry->RegisterBooleanPref(kBugmaxFirstRunDefaultsApplied, true);
+ }
+ 
+ void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {

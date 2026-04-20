@@ -1,16 +1,126 @@
-diff --git a/chrome/browser/bugmax/omnibox_profile_badge.md b/chrome/browser/bugmax/omnibox_profile_badge.md
-new file mode 100644
-index 0000000000000..fd592f20cf5a5
---- /dev/null
-+++ b/chrome/browser/bugmax/omnibox_profile_badge.md
-@@ -0,0 +1,10 @@
-+# Bugmax Omnibox Profile Badge Spec Marker
+diff --git a/chrome/browser/ui/views/location_bar/location_bar_view.h b/chrome/browser/ui/views/location_bar/location_bar_view.h
+--- a/chrome/browser/ui/views/location_bar/location_bar_view.h
++++ b/chrome/browser/ui/views/location_bar/location_bar_view.h
+@@ -381,6 +381,10 @@ class LocationBarView
+   // `ime_inline_autocomplete_view_`, and `omnibox_additional_text_view_`.
+   void SetOmniboxAdjacentText(views::Label* label, std::u16string_view text);
+ 
++  // Refreshes the profile badge shown in front of the omnibox input.
++  // Value is read from environment variable BUGMAX_PROFILE_NAME.
++  void UpdateProfileBadge();
 +
-+This source marker is applied in CI to represent the Bugmax customization
-+surface for omnibox/profile badge work.
+   // Called when the popup state changes (classic, AIM, or none).
+   void OnPopupStateChanged(OmniboxPopupState old_state,
+                            OmniboxPopupState new_state);
+@@ -576,6 +580,9 @@ class LocationBarView
+   // feature flag is disabled.
+   raw_ptr<views::Label> omnibox_additional_text_view_ = nullptr;
+ 
++  // Optional profile badge displayed before omnibox text.
++  raw_ptr<views::Label> profile_badge_label_ = nullptr;
 +
-+Target UX:
-+- show profile name badge before URL text.
-+- keep search input behavior equivalent to normal Chromium UX.
-+- keep adapter-only integration contract from BugLogin.
+   // The following views are used to provide hints and remind the user as to
+   // what is going in the edit. They are all added a children of the
+   // LocationBarView. At most one is visible at a time. These autocollapse when
+diff --git a/chrome/browser/ui/views/location_bar/location_bar_view.cc b/chrome/browser/ui/views/location_bar/location_bar_view.cc
+--- a/chrome/browser/ui/views/location_bar/location_bar_view.cc
++++ b/chrome/browser/ui/views/location_bar/location_bar_view.cc
+@@ -10,6 +10,7 @@
+ #include <string_view>
+ #include <utility>
+ 
++#include "base/environment.h"
+ #include "base/containers/adapters.h"
+ #include "base/feature_list.h"
+ #include "base/functional/bind.h"
+@@ -220,6 +221,9 @@ constexpr int kIntentChipIntraItemPadding = 12;
+ // The padding between the content setting icons and other trailing decorations.
+ constexpr int kContentSettingIntraItemPadding = 8;
+ 
++// Environment key controlling the omnibox profile badge text.
++constexpr char kBugmaxProfileNameEnv[] = "BUGMAX_PROFILE_NAME";
 +
+ }  // namespace
+ 
+ using content::WebContents;
+@@ -332,6 +336,17 @@ void LocationBarView::Init() {
+       std::make_unique<LocationIconView>(omnibox_chip_font_list, this, this);
+   location_icon_view->set_drag_controller(this);
+   location_icon_view_ = AddChildView(std::move(location_icon_view));
++
++  auto profile_badge_label = std::make_unique<views::Label>(
++      std::u16string(), views::Label::CustomFont{font_list});
++  profile_badge_label->SetHorizontalAlignment(gfx::ALIGN_CENTER);
++  profile_badge_label->SetElideBehavior(gfx::ELIDE_TAIL);
++  profile_badge_label->SetVisible(false);
++  profile_badge_label->SetAutoColorReadabilityEnabled(false);
++  profile_badge_label->SetBackground(views::CreateRoundedRectBackground(
++      GetColorProvider()->GetColor(kColorOmniboxResultsTextDimmed), 6));
++  profile_badge_label_ = AddChildView(std::move(profile_badge_label));
++  UpdateProfileBadge();
+ 
+   if (page_info::IsMerchantTrustFeatureEnabled() &&
+       page_info::kMerchantTrustEnableOmniboxChip.Get()) {
+@@ -676,6 +691,28 @@ std::u16string_view LocationBarView::GetOmniboxAdditionalText() const {
+   return omnibox_additional_text_view_->GetText();
+ }
+ 
++void LocationBarView::UpdateProfileBadge() {
++  if (!profile_badge_label_) {
++    return;
++  }
++
++  auto environment = base::Environment::Create();
++  std::string profile_name_utf8;
++  if (!environment || !environment->GetVar(kBugmaxProfileNameEnv,
++                                           &profile_name_utf8) ||
++      profile_name_utf8.empty()) {
++    SetOmniboxAdjacentText(profile_badge_label_, std::u16string());
++    profile_badge_label_->SetTooltipText(std::u16string());
++    return;
++  }
++
++  std::u16string profile_name = base::UTF8ToUTF16(profile_name_utf8);
++  std::u16string badge_text = u"[";
++  badge_text += profile_name;
++  badge_text += u"]";
++  SetOmniboxAdjacentText(profile_badge_label_, badge_text);
++  profile_badge_label_->SetTooltipText(profile_name);
++}
++
+ void LocationBarView::SetOmniboxAdjacentText(views::Label* label,
+                                              std::u16string_view text) {
+   if (text == label->GetText()) {
+@@ -963,6 +1000,13 @@ void LocationBarView::Layout(PassKey) {
+     location_icon_view_->SetVisible(false);
+   }
+ 
++  if (profile_badge_label_ && profile_badge_label_->GetVisible()) {
++    const int badge_padding =
++        GetLayoutConstant(LayoutConstant::kLocationBarElementPadding);
++    leading_decorations.AddDecoration(vertical_padding, location_height, false,
++                                      0, badge_padding, text_left,
++                                      profile_badge_label_);
++  }
++
+   if (merchant_trust_chip_controller_) {
+     // The merchant chip is shown when:
+     // 1. there is data to be shown
+@@ -2004,6 +2048,7 @@ void LocationBarView::OnChanged() {
+       !omnibox_view_->GetText().empty() &&
+       IsVirtualKeyboardVisible(GetWidget()));
+ 
++  UpdateProfileBadge();
+   InvalidateLayout();
+   SchedulePaint();
+   UpdateChipVisibility();
+@@ -2064,6 +2109,9 @@ void LocationBarView::OnTouchUiChanged() {
+   omnibox_view_->SetFontList(font_list);
+   ime_inline_autocomplete_view_->SetFontList(font_list);
+   omnibox_additional_text_view_->SetFontList(font_list);
++  if (profile_badge_label_) {
++    profile_badge_label_->SetFontList(font_list);
++  }
+   selected_keyword_view_->SetFontList(font_list);
+   for (ContentSettingImageView* view : content_setting_views_) {
+     view->SetFontList(font_list);
