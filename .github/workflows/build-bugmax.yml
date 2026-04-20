@@ -1,0 +1,80 @@
+name: Build Bugmax
+
+on:
+  workflow_dispatch:
+    inputs:
+      build_profile:
+        description: Build profile
+        required: true
+        default: full
+        type: choice
+        options: [full, smoke]
+      chromium_ref:
+        description: Chromium git ref/tag (optional)
+        required: false
+        type: string
+  push:
+    branches: [main]
+
+jobs:
+  build-windows-x64:
+    runs-on: windows-2022
+    timeout-minutes: 720
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Build Windows
+        shell: powershell
+        run: |
+          ./scripts/gha-build-windows.ps1 -Profile "${{ github.event.inputs.build_profile || 'full' }}" -ChromiumRef "${{ github.event.inputs.chromium_ref }}"
+
+      - name: Upload runtime artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: bugmax-windows-x64-runtime
+          path: bugmax-windows-x64.zip
+          if-no-files-found: error
+          compression-level: 0
+
+  build-macos-arm64:
+    runs-on: macos-14
+    timeout-minutes: 720
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Build macOS arm64
+        shell: bash
+        run: |
+          chmod +x ./scripts/gha-build-macos.sh
+          ./scripts/gha-build-macos.sh macos-arm64 "${{ github.event.inputs.build_profile || 'full' }}" "${{ github.event.inputs.chromium_ref }}"
+
+      - name: Upload runtime artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: bugmax-macos-arm64-runtime
+          path: bugmax-macos-arm64.tar.gz
+          if-no-files-found: error
+          compression-level: 0
+
+  build-macos-x64:
+    runs-on: macos-13
+    timeout-minutes: 720
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Build macOS x64
+        shell: bash
+        run: |
+          chmod +x ./scripts/gha-build-macos.sh
+          ./scripts/gha-build-macos.sh macos-x64 "${{ github.event.inputs.build_profile || 'full' }}" "${{ github.event.inputs.chromium_ref }}"
+
+      - name: Upload runtime artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: bugmax-macos-x64-runtime
+          path: bugmax-macos-x64.tar.gz
+          if-no-files-found: error
+          compression-level: 0
