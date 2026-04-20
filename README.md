@@ -15,6 +15,7 @@ Use workflow: `.github/workflows/build-bugmax.yml`
 
 Manual trigger inputs:
 - `build_profile`: `full` or `smoke`
+- `macos_targets`: `arm64-only` (default) or `arm64-and-x64`
 - `chromium_ref`: git ref/tag (optional)
 
 ## Output Artifacts

@@ -9,6 +9,12 @@ on:
         default: full
         type: choice
         options: [full, smoke]
+      macos_targets:
+        description: macOS targets
+        required: true
+        default: arm64-only
+        type: choice
+        options: [arm64-only, arm64-and-x64]
       chromium_ref:
         description: Chromium git ref/tag (optional)
         required: false
@@ -59,6 +65,7 @@ jobs:
           compression-level: 0
 
   build-macos-x64:
+    if: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.macos_targets == 'arm64-and-x64' }}
     runs-on: macos-13
     timeout-minutes: 720
     steps:
