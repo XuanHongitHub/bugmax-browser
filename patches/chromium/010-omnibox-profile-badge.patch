@@ -1,0 +1,16 @@
+diff --git a/chrome/browser/bugmax/omnibox_profile_badge.md b/chrome/browser/bugmax/omnibox_profile_badge.md
+new file mode 100644
+index 0000000000000..fd592f20cf5a5
+--- /dev/null
++++ b/chrome/browser/bugmax/omnibox_profile_badge.md
+@@ -0,0 +1,10 @@
++# Bugmax Omnibox Profile Badge Spec Marker
++
++This source marker is applied in CI to represent the Bugmax customization
++surface for omnibox/profile badge work.
++
++Target UX:
++- show profile name badge before URL text.
++- keep search input behavior equivalent to normal Chromium UX.
++- keep adapter-only integration contract from BugLogin.
++

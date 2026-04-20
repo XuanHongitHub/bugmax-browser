@@ -1,0 +1,14 @@
+diff --git a/chrome/browser/bugmax/branding_layer.gni b/chrome/browser/bugmax/branding_layer.gni
+new file mode 100644
+index 0000000000000..4a3128f7c4d21
+--- /dev/null
++++ b/chrome/browser/bugmax/branding_layer.gni
+@@ -0,0 +1,8 @@
++# Bugmax branding layer placeholder.
++# This patch exists so the one-shot build gate can enforce an explicit
++# customization patchset in CI.
++
++declare_args() {
++  bugmax_product_name = "Bugmax"
++  bugmax_company_name = "BugLogin"
++}

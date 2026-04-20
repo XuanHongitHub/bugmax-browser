@@ -1,0 +1,16 @@
+diff --git a/chrome/browser/bugmax/search_defaults.md b/chrome/browser/bugmax/search_defaults.md
+new file mode 100644
+index 0000000000000..a922bb91b8e2a
+--- /dev/null
++++ b/chrome/browser/bugmax/search_defaults.md
+@@ -0,0 +1,10 @@
++# Bugmax Search Defaults Marker
++
++Search defaults are distributed with runtime artifacts via:
++- config/initial_preferences.json
++
++Expected behavior:
++- query text -> search provider URL
++- valid URL -> direct navigation
++- avoid accidental coercion to malformed `http://<query>`
++
