@@ -17,6 +17,7 @@ Manual trigger inputs:
 - `build_profile`: `full` or `smoke`
 - `macos_targets`: `arm64-only` (default) or `arm64-and-x64`
 - `chromium_ref`: git ref/tag (optional)
+- `apply_customizations`: `true` (default) or `false`
 
 ## Output Artifacts
 
@@ -27,3 +28,4 @@ Manual trigger inputs:
 ## Release Process
 
 - One-shot release checklist: `docs/release-one-shot-checklist.md`
+- One-shot build workflow is manual-only to avoid accidental long rebuilds on every push.

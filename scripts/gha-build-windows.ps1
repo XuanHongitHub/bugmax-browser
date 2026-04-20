@@ -1,6 +1,7 @@
 param(
   [Parameter(Mandatory=$true)][string]$Profile,
-  [string]$ChromiumRef=""
+  [string]$ChromiumRef="",
+  [string]$ApplyCustomizations="true"
 )
 
 $ErrorActionPreference = "Stop"
@@ -10,6 +11,7 @@ $depotDir = Join-Path $workspace "depot_tools"
 $srcDir = Join-Path $workDir "src"
 $outDir = Join-Path $srcDir "out/Release"
 $distDir = Join-Path $workspace "dist/windows-x64"
+$repoRoot = $workspace
 
 New-Item -ItemType Directory -Force -Path $workDir,$distDir | Out-Null
 
@@ -31,6 +33,10 @@ if ($ChromiumRef -ne "") {
 
 gclient sync -D --force --with_branch_heads --with_tags
 gclient runhooks
+
+if ($ApplyCustomizations -eq "true") {
+  & (Join-Path $repoRoot "scripts/apply-customizations-windows.ps1") -RepoRoot $repoRoot -ChromiumSrc $srcDir
+}
 
 $args = @"
 is_debug=false
@@ -63,7 +69,13 @@ foreach ($f in $runtimeFiles) {
   $p = Join-Path $outDir $f
   if (Test-Path $p) { Copy-Item $p -Destination $distDir -Force }
 }
+if (Test-Path (Join-Path $distDir "chrome.exe")) {
+  Copy-Item (Join-Path $distDir "chrome.exe") -Destination (Join-Path $distDir "bugmax.exe") -Force
+}
 if (Test-Path (Join-Path $outDir "locales")) { Copy-Item (Join-Path $outDir "locales") -Destination $distDir -Recurse -Force }
 if (Test-Path (Join-Path $outDir "swiftshader")) { Copy-Item (Join-Path $outDir "swiftshader") -Destination $distDir -Recurse -Force }
+if (Test-Path (Join-Path $repoRoot "config/initial_preferences.json")) {
+  Copy-Item (Join-Path $repoRoot "config/initial_preferences.json") -Destination (Join-Path $distDir "initial_preferences") -Force
+}
 
 Compress-Archive -Path (Join-Path $distDir "*") -DestinationPath (Join-Path $workspace "bugmax-windows-x64.zip") -Force

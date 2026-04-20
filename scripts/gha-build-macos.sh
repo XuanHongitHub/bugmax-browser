@@ -4,12 +4,14 @@ set -euo pipefail
 TARGET="$1"      # macos-arm64 | macos-x64
 PROFILE="$2"     # full | smoke
 CHROMIUM_REF="${3:-}"
+APPLY_CUSTOMIZATIONS="${4:-true}"
 
 WORK_DIR="${GITHUB_WORKSPACE}/work"
 DEPOT_DIR="${GITHUB_WORKSPACE}/depot_tools"
 SRC_DIR="${WORK_DIR}/src"
 OUT_DIR="${SRC_DIR}/out/Release"
 DIST_DIR="${GITHUB_WORKSPACE}/dist/${TARGET}"
+REPO_ROOT="${GITHUB_WORKSPACE}"
 
 mkdir -p "${WORK_DIR}" "${DIST_DIR}"
 
@@ -33,6 +35,11 @@ gclient sync -D --force --with_branch_heads --with_tags
 
 gclient runhooks
 
+if [ "${APPLY_CUSTOMIZATIONS}" = "true" ]; then
+  chmod +x "${REPO_ROOT}/scripts/apply-customizations-macos.sh"
+  "${REPO_ROOT}/scripts/apply-customizations-macos.sh" "${REPO_ROOT}" "${SRC_DIR}"
+fi
+
 cat > "${SRC_DIR}/out/Release/args.gn" <<EOF
 is_debug=false
 is_component_build=false
@@ -53,6 +60,9 @@ fi
 # Runtime-only packaging
 if [ -d "${OUT_DIR}/Chromium.app" ]; then
   cp -R "${OUT_DIR}/Chromium.app" "${DIST_DIR}/Bugmax.app"
+fi
+if [ -f "${REPO_ROOT}/config/initial_preferences.json" ]; then
+  cp "${REPO_ROOT}/config/initial_preferences.json" "${DIST_DIR}/initial_preferences"
 fi
 if [ -f "${OUT_DIR}/icudtl.dat" ]; then cp "${OUT_DIR}/icudtl.dat" "${DIST_DIR}/"; fi
 if [ -f "${OUT_DIR}/v8_context_snapshot.bin" ]; then cp "${OUT_DIR}/v8_context_snapshot.bin" "${DIST_DIR}/"; fi

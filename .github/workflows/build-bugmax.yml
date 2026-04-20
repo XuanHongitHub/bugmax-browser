@@ -19,8 +19,12 @@ on:
         description: Chromium git ref/tag (optional)
         required: false
         type: string
-  push:
-    branches: [main]
+      apply_customizations:
+        description: Apply Bugmax customization layer
+        required: true
+        default: "true"
+        type: choice
+        options: ["true", "false"]
 
 jobs:
   build-windows-x64:
@@ -33,7 +37,7 @@ jobs:
       - name: Build Windows
         shell: powershell
         run: |
-          ./scripts/gha-build-windows.ps1 -Profile "${{ github.event.inputs.build_profile || 'full' }}" -ChromiumRef "${{ github.event.inputs.chromium_ref }}"
+          ./scripts/gha-build-windows.ps1 -Profile "${{ github.event.inputs.build_profile || 'full' }}" -ChromiumRef "${{ github.event.inputs.chromium_ref }}" -ApplyCustomizations "${{ github.event.inputs.apply_customizations || 'true' }}"
 
       - name: Upload runtime artifact
         uses: actions/upload-artifact@v4
@@ -54,7 +58,7 @@ jobs:
         shell: bash
         run: |
           chmod +x ./scripts/gha-build-macos.sh
-          ./scripts/gha-build-macos.sh macos-arm64 "${{ github.event.inputs.build_profile || 'full' }}" "${{ github.event.inputs.chromium_ref }}"
+          ./scripts/gha-build-macos.sh macos-arm64 "${{ github.event.inputs.build_profile || 'full' }}" "${{ github.event.inputs.chromium_ref }}" "${{ github.event.inputs.apply_customizations || 'true' }}"
 
       - name: Upload runtime artifact
         uses: actions/upload-artifact@v4
@@ -76,7 +80,7 @@ jobs:
         shell: bash
         run: |
           chmod +x ./scripts/gha-build-macos.sh
-          ./scripts/gha-build-macos.sh macos-x64 "${{ github.event.inputs.build_profile || 'full' }}" "${{ github.event.inputs.chromium_ref }}"
+          ./scripts/gha-build-macos.sh macos-x64 "${{ github.event.inputs.build_profile || 'full' }}" "${{ github.event.inputs.chromium_ref }}" "${{ github.event.inputs.apply_customizations || 'true' }}"
 
       - name: Upload runtime artifact
         uses: actions/upload-artifact@v4
