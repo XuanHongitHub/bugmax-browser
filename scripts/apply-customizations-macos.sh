@@ -4,6 +4,9 @@ set -euo pipefail
 REPO_ROOT="$1"
 CHROMIUM_SRC="$2"
 
+chmod +x "${REPO_ROOT}/scripts/validate-customization-patchset.sh"
+"${REPO_ROOT}/scripts/validate-customization-patchset.sh" "${REPO_ROOT}"
+
 PATCH_DIR="${REPO_ROOT}/patches/chromium"
 if [ -d "${PATCH_DIR}" ]; then
   shopt -s nullglob

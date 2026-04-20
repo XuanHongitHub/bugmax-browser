@@ -21,4 +21,8 @@ Known constraints:
 4. Trigger `.github/workflows/build-bugmax.yml` manually with:
    - `build_profile=full`
    - `macos_targets=arm64-only` (or `arm64-and-x64` for release)
-   - `apply_customizations=true`
+5. Build will fail fast if required patch files are missing:
+   - `001-branding.patch`
+   - `010-omnibox-profile-badge.patch`
+   - `020-search-defaults.patch`
+   - `030-first-run-defaults.patch`

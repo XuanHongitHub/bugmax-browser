@@ -5,6 +5,9 @@ param(
 
 $ErrorActionPreference = "Stop"
 
+$validator = Join-Path $RepoRoot "scripts/validate-customization-patchset.ps1"
+& $validator -RepoRoot $RepoRoot
+
 $patchDir = Join-Path $RepoRoot "patches/chromium"
 if (Test-Path $patchDir) {
   $patches = Get-ChildItem -Path $patchDir -Filter *.patch | Sort-Object Name
