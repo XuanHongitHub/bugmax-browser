@@ -1,0 +1,62 @@
+name: Build macOS arm64
+
+on:
+  workflow_dispatch:
+    inputs:
+      chromium_ref:
+        description: Chromium git ref/tag/commit. Leave empty for origin/main.
+        required: false
+        type: string
+      clean_build:
+        description: Delete out/BugmaxArm64 before building.
+        required: true
+        default: false
+        type: boolean
+      sign:
+        description: Sign and notarize with configured Apple credentials.
+        required: true
+        default: false
+        type: boolean
+
+jobs:
+  build:
+    runs-on: [self-hosted, macOS, ARM64]
+    timeout-minutes: 720
+    env:
+      BUGMAX_WORK_DIR: ${{ vars.BUGMAX_WORK_DIR || '/Users/runner/bugmax-chromium' }}
+      BUGMAX_OUT_DIR: out/BugmaxArm64
+      BUGMAX_APP_NAME: Bugmax
+      BUGMAX_BUNDLE_ID: com.buglogin.bugmax
+      BUGMAX_SIGN: ${{ inputs.sign }}
+      APPLE_CODESIGN_IDENTITY: ${{ secrets.APPLE_CODESIGN_IDENTITY }}
+      APPLE_NOTARY_PROFILE: ${{ secrets.APPLE_NOTARY_PROFILE }}
+    steps:
+      - name: Checkout build repo
+        uses: actions/checkout@v4
+
+      - name: Prepare Chromium
+        shell: bash
+        run: |
+          chmod +x scripts/*.sh
+          scripts/prepare-chromium-macos.sh "${{ inputs.chromium_ref }}"
+
+      - name: Build Chromium
+        shell: bash
+        run: |
+          scripts/build-macos-arm64.sh "${{ inputs.clean_build }}"
+
+      - name: Package Bugmax
+        shell: bash
+        run: |
+          scripts/package-macos-arm64.sh
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: bugmax-macos-arm64
+          path: |
+            dist/bugmax-macos-arm64.dmg
+            dist/SHA256SUMS
+            dist/build-info.json
+          if-no-files-found: error
+          compression-level: 0

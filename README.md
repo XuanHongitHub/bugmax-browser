@@ -1,31 +1,29 @@
 # Bugmax Browser
 
-Bugmax is a custom Chromium runtime for BugLogin.
+Bugmax is the BugLogin-owned Chromium runtime.
 
-## Goals
+Current scope: macOS arm64 build scaffold for a self-hosted Apple Silicon
+runner. The workflow builds vanilla Chromium first, packages `Bugmax.app`, and
+optionally signs/notarizes the DMG.
 
-- Build from `chromium/src`
-- Keep BugLogin integration adapter-only
-- Runtime-only packaging (no heavy intermediate artifacts)
-- Support Windows and macOS builds via GitHub Actions
+This repo intentionally does not contain placeholder fingerprint or omnibox
+patches. Those changes must be added as pinned, reviewed Chromium source patches
+after the base build is confirmed.
 
-## CI
+## Workflow
 
-Use workflow: `.github/workflows/build-bugmax.yml`
+Use `.github/workflows/build-macos-arm64.yml`.
 
-Manual trigger inputs:
-- `build_profile`: `full` or `smoke`
-- `macos_targets`: `arm64-only` (default) or `arm64-and-x64`
-- `chromium_ref`: git ref/tag (optional)
+Inputs:
 
-## Output Artifacts
+- `chromium_ref`: optional Chromium ref/tag/commit.
+- `clean_build`: remove `out/BugmaxArm64` before build.
+- `sign`: sign and notarize using configured Apple secrets.
 
-- `bugmax-windows-x64-runtime`
-- `bugmax-macos-arm64-runtime`
-- `bugmax-macos-x64-runtime`
+Output:
 
-## Release Process
+- `dist/bugmax-macos-arm64.dmg`
+- `dist/SHA256SUMS`
+- `dist/build-info.json`
 
-- One-shot release checklist: `docs/release-one-shot-checklist.md`
-- One-shot build workflow is manual-only to avoid accidental long rebuilds on every push.
-- Release build always applies required Bugmax customization patchset before compile.
+See [docs/build-macos-arm64.md](docs/build-macos-arm64.md).
