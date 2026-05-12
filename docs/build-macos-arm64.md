@@ -34,6 +34,10 @@ the Mac mini, for example:
 /Users/runner/bugmax-chromium
 ```
 
+Optional:
+
+- `BUGMAX_MIN_FREE_GB`: defaults to `220`.
+
 ## Signing secrets
 
 Only required when workflow input `sign=true`.
@@ -61,7 +65,21 @@ export BUGMAX_APP_NAME=Bugmax
 export BUGMAX_BUNDLE_ID=com.buglogin.bugmax
 export BUGMAX_SIGN=false
 
+scripts/preflight-macos-arm64.sh
 scripts/prepare-chromium-macos.sh ""
 scripts/build-macos-arm64.sh false
 scripts/package-macos-arm64.sh
 ```
+
+## Recommended first run
+
+Run the workflow with:
+
+- `preflight_only=true`
+- `sign=false`
+
+If that passes, run:
+
+- `preflight_only=false`
+- `clean_build=false`
+- `sign=false`

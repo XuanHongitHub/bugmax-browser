@@ -6,5 +6,6 @@
 - [x] Add build script.
 - [x] Add packaging script.
 - [x] Add optional signing/notarization script.
+- [x] Add preflight script.
 - [x] Add docs.
 - [ ] Validate on Mac mini runner.

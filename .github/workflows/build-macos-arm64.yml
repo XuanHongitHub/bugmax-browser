@@ -17,6 +17,11 @@ on:
         required: true
         default: false
         type: boolean
+      preflight_only:
+        description: Check runner only; do not download or build Chromium.
+        required: true
+        default: false
+        type: boolean
 
 jobs:
   build:
@@ -34,23 +39,32 @@ jobs:
       - name: Checkout build repo
         uses: actions/checkout@v4
 
-      - name: Prepare Chromium
+      - name: Preflight runner
         shell: bash
         run: |
           chmod +x scripts/*.sh
+          scripts/preflight-macos-arm64.sh
+
+      - name: Prepare Chromium
+        if: ${{ !inputs.preflight_only }}
+        shell: bash
+        run: |
           scripts/prepare-chromium-macos.sh "${{ inputs.chromium_ref }}"
 
       - name: Build Chromium
+        if: ${{ !inputs.preflight_only }}
         shell: bash
         run: |
           scripts/build-macos-arm64.sh "${{ inputs.clean_build }}"
 
       - name: Package Bugmax
+        if: ${{ !inputs.preflight_only }}
         shell: bash
         run: |
           scripts/package-macos-arm64.sh
 
       - name: Upload artifact
+        if: ${{ !inputs.preflight_only }}
         uses: actions/upload-artifact@v4
         with:
           name: bugmax-macos-arm64
