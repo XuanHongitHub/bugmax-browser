@@ -27,3 +27,12 @@ Output:
 - `dist/build-info.json`
 
 See [docs/build-macos-arm64.md](docs/build-macos-arm64.md).
+
+Quick order:
+
+1. Configure the self-hosted Mac mini runner.
+2. Run preflight only.
+3. Run unsigned vanilla Chromium build.
+4. Configure Apple Developer ID secrets.
+5. Run signed/notarized build.
+6. Add pinned Chromium source patches.

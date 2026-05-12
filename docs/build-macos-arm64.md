@@ -16,6 +16,12 @@ self-hosted, macOS, ARM64
 Recommended disk: 1TB. 500GB can work for one arm64 target if old outputs are
 removed.
 
+Bootstrap helper on the Mac mini:
+
+```bash
+scripts/bootstrap-macos-runner.sh
+```
+
 ## Required local tools
 
 - Xcode
@@ -78,8 +84,20 @@ Run the workflow with:
 - `preflight_only=true`
 - `sign=false`
 
+CLI:
+
+```bash
+scripts/trigger-macos-preflight.sh
+```
+
 If that passes, run:
 
 - `preflight_only=false`
 - `clean_build=false`
 - `sign=false`
+
+CLI:
+
+```bash
+scripts/trigger-macos-build.sh XuanHongitHub/bugmax-browser "" false false
+```
