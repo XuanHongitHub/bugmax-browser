@@ -36,4 +36,8 @@ enable_nacl = false
 EOF
 
 gn gen "${OUT_DIR}"
-autoninja -C "${OUT_DIR}" chrome
+if [ "${BUGMAX_SIGN:-false}" = "true" ]; then
+  autoninja -C "${OUT_DIR}" chrome chrome/installer/mac
+else
+  autoninja -C "${OUT_DIR}" chrome
+fi

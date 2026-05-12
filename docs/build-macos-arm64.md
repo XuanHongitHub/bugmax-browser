@@ -103,3 +103,8 @@ CLI:
 ```bash
 scripts/trigger-macos-build.sh XuanHongitHub/bugmax-browser "" false false
 ```
+
+Signed builds compile the Chromium mac installer/signing target and invoke
+Chromium's own `sign_chrome.py` pipeline before notarizing the DMG. This is
+intentional; Chromium contains nested helpers/frameworks that need the signing
+order and entitlements from its mac signing scripts.
