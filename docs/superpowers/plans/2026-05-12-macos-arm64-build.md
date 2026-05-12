@@ -7,5 +7,7 @@
 - [x] Document runner, secrets, and local run commands.
 - [x] Add macOS runner preflight.
 - [x] Add runner bootstrap and trigger helper scripts.
+- [x] Pin default Chromium ref.
+- [x] Apply BugLogin branding and omnibox profile badge before build.
 - [ ] Run on Apple Silicon self-hosted runner.
 - [ ] Add pinned Chromium customization patches after vanilla build passes.

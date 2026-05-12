@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-CHROMIUM_REF="${1:-}"
+CHROMIUM_REF="${1:-146.0.7680.82}"
 WORK_DIR="${BUGMAX_WORK_DIR:-$PWD/.work/chromium}"
 DEPOT_TOOLS_DIR="${WORK_DIR}/depot_tools"
 SRC_DIR="${WORK_DIR}/src"
@@ -30,13 +30,8 @@ if [ ! -d "${SRC_DIR}/.git" ]; then
 fi
 
 cd "${SRC_DIR}"
-if [ -n "${CHROMIUM_REF}" ]; then
-  git fetch --tags origin "${CHROMIUM_REF}"
-  git checkout --detach FETCH_HEAD
-else
-  git checkout main
-  git pull --ff-only
-fi
+git fetch --tags origin "${CHROMIUM_REF}"
+git checkout --detach FETCH_HEAD
 
 gclient sync --no-history --nohooks --delete_unversioned_trees
 gclient runhooks

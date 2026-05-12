@@ -4,8 +4,9 @@ on:
   workflow_dispatch:
     inputs:
       chromium_ref:
-        description: Chromium git ref/tag/commit. Leave empty for origin/main.
+        description: Chromium git ref/tag/commit.
         required: false
+        default: "146.0.7680.82"
         type: string
       clean_build:
         description: Delete out/BugmaxArm64 before building.
@@ -33,6 +34,7 @@ jobs:
       BUGMAX_APP_NAME: Bugmax
       BUGMAX_BUNDLE_ID: com.buglogin.bugmax
       BUGMAX_SIGN: ${{ inputs.sign }}
+      BUGMAX_APPLY_CUSTOMIZATIONS: "true"
       APPLE_CODESIGN_IDENTITY: ${{ secrets.APPLE_CODESIGN_IDENTITY }}
       APPLE_NOTARY_PROFILE: ${{ secrets.APPLE_NOTARY_PROFILE }}
     steps:

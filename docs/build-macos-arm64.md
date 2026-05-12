@@ -43,6 +43,7 @@ the Mac mini, for example:
 Optional:
 
 - `BUGMAX_MIN_FREE_GB`: defaults to `220`.
+- `BUGMAX_APPLY_CUSTOMIZATIONS`: defaults to `true`.
 
 ## Signing secrets
 
@@ -72,7 +73,7 @@ export BUGMAX_BUNDLE_ID=com.buglogin.bugmax
 export BUGMAX_SIGN=false
 
 scripts/preflight-macos-arm64.sh
-scripts/prepare-chromium-macos.sh ""
+scripts/prepare-chromium-macos.sh "146.0.7680.82"
 scripts/build-macos-arm64.sh false
 scripts/package-macos-arm64.sh
 ```

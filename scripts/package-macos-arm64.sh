@@ -26,6 +26,13 @@ defaults write "${APP_DST}/Contents/Info.plist" CFBundleDisplayName "${APP_NAME}
 defaults write "${APP_DST}/Contents/Info.plist" CFBundleIdentifier "${BUNDLE_ID}"
 plutil -convert xml1 "${APP_DST}/Contents/Info.plist"
 
+actual_name="$(defaults read "${APP_DST}/Contents/Info.plist" CFBundleName)"
+actual_bundle="$(defaults read "${APP_DST}/Contents/Info.plist" CFBundleIdentifier)"
+if [ "${actual_name}" != "${APP_NAME}" ] || [ "${actual_bundle}" != "${BUNDLE_ID}" ]; then
+  echo "error: app branding assertion failed" >&2
+  exit 1
+fi
+
 if [ "${SIGN}" = "true" ]; then
   scripts/sign-notarize-macos.sh "${APP_DST}" "${DMG_PATH}"
 else

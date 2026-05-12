@@ -11,9 +11,9 @@ Goal: BugLogin-owned Chromium fork for macOS arm64 first.
 
 ## Planned patch groups
 
-1. Branding: app name, bundle id, icon set, About strings.
-2. Omnibox profile badge: source-level Views UI patch.
-3. Default search engine and first-run preferences.
+1. Branding: app name, bundle id, icon set, About strings. Done.
+2. Omnibox profile badge: source-level Views UI patch. Done.
+3. Default search engine and first-run preferences. Partial.
 4. Profile icon behavior: runtime dock badge first; per-profile app icon only
    after launch model is fixed.
 5. Fingerprint layer: deterministic per-profile seed, source-level patches for
