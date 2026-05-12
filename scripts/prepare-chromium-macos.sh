@@ -6,7 +6,7 @@ WORK_DIR="${BUGMAX_WORK_DIR:-$PWD/.work/chromium}"
 DEPOT_TOOLS_DIR="${WORK_DIR}/depot_tools"
 SRC_DIR="${WORK_DIR}/src"
 
-min_free_gb=180
+min_free_gb="${BUGMAX_MIN_FREE_GB:-450}"
 mkdir -p "${WORK_DIR}"
 free_kb="$(df -Pk "${WORK_DIR}" | awk 'NR==2 {print $4}')"
 free_gb="$((free_kb / 1024 / 1024))"

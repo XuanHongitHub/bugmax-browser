@@ -2,7 +2,7 @@
 set -euo pipefail
 
 WORK_DIR="${BUGMAX_WORK_DIR:-$PWD/.work/chromium}"
-MIN_FREE_GB="${BUGMAX_MIN_FREE_GB:-220}"
+MIN_FREE_GB="${BUGMAX_MIN_FREE_GB:-450}"
 
 echo "uname: $(uname -a)"
 if [ "$(uname -s)" != "Darwin" ]; then

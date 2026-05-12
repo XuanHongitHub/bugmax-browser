@@ -14,7 +14,8 @@ self-hosted, macOS, ARM64
 ```
 
 Recommended disk: 1TB. 500GB can work for one arm64 target if old outputs are
-removed.
+removed. The workflow requires 450GB free by default to avoid starting a build
+that will later fail with `No space left on device`.
 
 Bootstrap helper on the Mac mini:
 
@@ -43,7 +44,7 @@ the Mac mini, for example:
 
 Optional:
 
-- `BUGMAX_MIN_FREE_GB`: defaults to `220`.
+- `BUGMAX_MIN_FREE_GB`: defaults to `450`.
 - `BUGMAX_APPLY_CUSTOMIZATIONS`: defaults to `true`.
 
 ## Signing secrets
