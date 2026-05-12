@@ -1,6 +1,8 @@
 #!/usr/bin/env python3
 import pathlib
+import shutil
 import struct
+import subprocess
 import sys
 import zlib
 
@@ -96,7 +98,23 @@ def bugmax_icon(size: int) -> bytes:
 
 
 def patch_icons(src: pathlib.Path) -> None:
+    repo_root = pathlib.Path(__file__).resolve().parents[1]
+    buglogin_logo = repo_root / "assets/buglogin-logo.png"
     theme = src / "chrome/app/theme/chromium"
+    if buglogin_logo.exists():
+        if not shutil.which("sips"):
+            raise RuntimeError("sips is required to resize BugLogin logo on macOS")
+        for size in (16, 32, 48, 64, 128, 256):
+            path = theme / f"product_logo_{size}.png"
+            if path.exists():
+                subprocess.run(
+                    ["sips", "-z", str(size), str(size), str(buglogin_logo), "--out", str(path)],
+                    check=True,
+                    stdout=subprocess.DEVNULL,
+                    stderr=subprocess.DEVNULL,
+                )
+        return
+
     for size in (16, 32, 48, 64, 128, 256):
         path = theme / f"product_logo_{size}.png"
         if path.exists():

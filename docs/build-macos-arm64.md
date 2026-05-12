@@ -28,6 +28,7 @@ scripts/bootstrap-macos-runner.sh
 - Git
 - Python 3
 - `hdiutil`, `codesign`, `xcrun`, `spctl`
+- `sips`
 
 The workflow downloads `depot_tools` automatically.
 

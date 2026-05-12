@@ -7,6 +7,8 @@ workflow builds a BugLogin-branded Chromium runtime, packages `Bugmax.app`, and
 optionally signs/notarizes the DMG.
 
 The default Chromium ref is pinned to `146.0.7680.82`.
+Branding uses the current BugLogin logo at `assets/buglogin-logo.png`; browser
+name remains `Bugmax`.
 
 ## Workflow
 

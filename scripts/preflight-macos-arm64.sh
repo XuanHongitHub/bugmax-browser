@@ -40,7 +40,7 @@ if [ "${free_gb}" -lt "${MIN_FREE_GB}" ]; then
   exit 1
 fi
 
-for tool in git python3 hdiutil codesign xcrun spctl plutil shasum; do
+for tool in git python3 hdiutil codesign xcrun spctl plutil shasum sips; do
   if ! command -v "${tool}" >/dev/null 2>&1; then
     echo "error: missing required tool: ${tool}" >&2
     exit 1

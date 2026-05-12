@@ -26,7 +26,7 @@ BugLogin should continue to own profile isolation and proxy configuration:
 ## Included source customizations
 
 - BugLogin/Bugmax Chromium branding.
-- Generated Bugmax product icons.
+- BugLogin product logo from `assets/buglogin-logo.png`.
 - macOS bundle id `com.buglogin.bugmax`.
 - Omnibox profile badge from `BUGLOGIN_PROFILE_NAME`.
 - Search-biased multi-token omnibox input.
